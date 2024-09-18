@@ -1,50 +1,20 @@
-# React + TypeScript + Vite
+# smallProject
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+그냥 심심해서해보는 심심한 프로젝트
 
-Currently, two official plugins are available:
+day = 07:00 ~ 15:00
+evening = 14:30 ~ 22:30
+night = 22:00 ~ 07:30
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+규칙
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+1. night 뒤에는 off off가 있어야한다.
+2. 한사람이 연속되는 night는 최대 3번만 가능하다
+3. 총 off수는 공휴일과 주말 갯수와 같다.
+4. 매일 근무가 가능한 최대날은 5일이다.
+5. evening다음에 day는 올수 없지만 day다음에는 evening이 올 수 있다.
+6. 주말에 day, evening, night는 모두 2명씩 근무한다.
+7. 평일에는 day 3명, evening 3명, night 2명이 근무한다.
+8. 연차가 있는 인원은 해당 날짜에 근무 할 수 없다.
+9. 입력된 사수와 부사수가 있고, 사수는 사수와 함께 근무할 수 있지만 부사수는 반드시 사수와 함께 근무해야한다.
+10. evening 다음 night을 할수는 없다.
