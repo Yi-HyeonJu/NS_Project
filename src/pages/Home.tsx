@@ -1,11 +1,15 @@
 import CustomCalendar from '../components/CustomCalendar';
 import { useState } from 'react';
+import useStore from '../store/useStore';
 
 const Home = () => {
+  const { addSchedule } = useStore();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [tempSelectedDates, setTempSelectedDates] = useState<Date[]>([]);
   const [isSelectionComplete, setIsSelectionComplete] = useState(false);
+  const [name, setName] = useState('');
+  const [isSupervisor, setIsSupervisor] = useState(false);
 
   const handleDateChange = (date: Date) => {
     setTempSelectedDates((prevDates) => {
@@ -37,6 +41,26 @@ const Home = () => {
     setSelectedDates(tempSelectedDates);
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formattedDates = selectedDates.map((date) => formatDate(date));
+
+    addSchedule({
+      name,
+      isSupervisor,
+      selectedDates,
+      formattedDates,
+    });
+
+    setName('');
+    setIsSupervisor(false);
+    setSelectedDates([]);
+    setTempSelectedDates([]);
+    setIsSelectionComplete(false);
+
+    console.log({ name, isSupervisor, selectedDates: formattedDates });
+  };
+
   const formatDate = (date: Date): string => {
     const monthNames = [
       '1월',
@@ -65,13 +89,21 @@ const Home = () => {
           <input
             id='name'
             type='text'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className='w-[70%] rounded-md border border-main px-2 py-1'
           />
         </div>
         <div className='flex w-[100%] items-center'>
           <span className='w-[30%] text-main'>사수 여부 :</span>
           <div className='flex w-[70%] items-center gap-3'>
-            <input id='check' type='checkbox' className='h-6 w-6' />
+            <input
+              id='check'
+              type='checkbox'
+              checked={isSupervisor}
+              onChange={() => setIsSupervisor((prev) => !prev)}
+              className='h-6 w-6'
+            />
             <span className='text-sm text-main'>(미체크시 부사수)</span>
           </div>
         </div>
@@ -114,6 +146,7 @@ const Home = () => {
         )}
         <button
           type='submit'
+          onClick={handleSubmit}
           className='w-fit self-center rounded-md border bg-border px-2 py-1 hover:bg-gray-400'
         >
           추가하기
