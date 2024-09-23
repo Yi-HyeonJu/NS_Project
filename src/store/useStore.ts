@@ -11,7 +11,9 @@ interface Schedule {
 
 interface Store {
   schedules: Schedule[];
+  month: string;
   addSchedule: (schedule: Schedule) => void;
+  setMonth: (month: string) => void;
 }
 
 const customSessionStorage: PersistStorage<Store> = {
@@ -34,10 +36,12 @@ const useStore = create<Store>()(
   persist(
     (set) => ({
       schedules: [],
+      month: '',
       addSchedule: (schedule) =>
         set((state) => ({
           schedules: [...state.schedules, schedule],
         })),
+      setMonth: (month) => set({ month }),
     }),
     {
       name: 'schedules-storage',
