@@ -82,7 +82,7 @@ const Home = () => {
 
   return (
     <div className='flex flex-col items-center justify-center gap-5 py-4'>
-      <p className='text-[30px] font-semibold'>간호사 스케줄표</p>
+      <h2 className='text-[30px] font-semibold'>근무 인원 추가하기</h2>
       <form className='flex w-[400px] flex-col gap-7 rounded-md border p-5'>
         <div className='flex w-[100%] items-center'>
           <span className='w-[30%] text-main'>이름 :</span>

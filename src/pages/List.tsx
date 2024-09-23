@@ -82,8 +82,8 @@ const List = () => {
   };
 
   return (
-    <div className='p-4'>
-      <h2 className='mb-4 text-xl font-semibold'>간호사 목록</h2>
+    <div className='flex flex-col items-center justify-center gap-5 py-4'>
+      <h2 className='text-[30px] font-semibold'>근무 인원 목록</h2>
       <ul className='list-disc space-y-2 pl-5'>
         {schedules.map((schedule, index) => (
           <li key={index} className='flex items-center justify-between'>
