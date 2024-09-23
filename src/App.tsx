@@ -16,7 +16,7 @@ const App = () => {
             인원 목록
           </Link>
           <Link to='/schedule' className='mr-4'>
-            근무표
+            근무표 만들기
           </Link>
         </nav>
         <Routes>
