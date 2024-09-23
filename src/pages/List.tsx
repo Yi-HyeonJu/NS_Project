@@ -82,18 +82,31 @@ const List = () => {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center gap-5 py-4'>
+    <div className='flex flex-col items-center justify-center gap-5 py-4 w-svw'>
       <h2 className='text-[30px] font-semibold'>근무 인원 목록</h2>
-      <ul className='list-disc space-y-2 pl-5'>
+      <ul className='flex w-[70%] list-disc flex-col gap-3'>
         {schedules.map((schedule, index) => (
-          <li key={index} className='flex items-center justify-between'>
-            <span className='flex gap-2'>
+          <li key={index} className='flex items-start justify-between'>
+            <span className='w-[100px]'>
               {`${schedule.name} (${schedule.isSupervisor ? '사수' : '부사수'})`}
-              {schedule.selectedDates.length > 0 && (
-                <span>: {schedule.formattedDates.join(', ')}</span>
-              )}
             </span>
-            <div className='flex space-x-2'>
+            {schedule.selectedDates.length > 0 && (
+              <div className='w-[50%]'>
+                <div className='flex'>
+                  <span className='whitespace-nowrap'>연차 :</span>
+                  <div className='flex flex-wrap ml-2'>
+                    {schedule.formattedDates.map((date, idx) => (
+                      <span key={idx} className='mr-2'>
+                        {date.split(' ').slice(1).join(' ')}
+                        {idx < schedule.formattedDates.length - 1 && ', '}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className='flex items-center gap-3'>
               <button
                 onClick={() => handleEdit(index)}
                 className='text-blue-500'
