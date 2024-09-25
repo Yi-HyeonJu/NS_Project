@@ -4,23 +4,49 @@ import useStore from '../store/useStore';
 
 const Schedule = () => {
   const { month, schedules } = useStore();
-  const [offDays, setOffDays] = useState('');
-  const [workDays, setWorkDays] = useState('');
+  const [offDays, setOffDays] = useState<string | undefined>('');
+  const [workDays, setWorkDays] = useState<string | undefined>('');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const today = new Date();
+    const nextMonthFirstDay = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      1
+    );
+    const nextMonthLastDay = new Date(
+      today.getFullYear(),
+      today.getMonth() + 2,
+      0
+    );
+
+    const start_weekday = nextMonthFirstDay.toLocaleDateString('en-US', {
+      weekday: 'long',
+    });
+    const total_days = nextMonthLastDay.getDate();
+
+    const nurses = schedules.map((schedule, index) => ({
+      id: index + 1,
+      name: schedule.name,
+      is_senior: schedule.isSupervisor,
+      vacation_days: schedule.selectedDates,
+    }));
+
     const scheduleData = {
-      month,
-      offDays: offDays.split(',').map((day) => day.trim()),
-      workDays: workDays.split(',').map((day) => day.trim()),
-      nurses: schedules, // 스토어에서 저장된 간호사 정보
+      total_off_days: offDays ? parseInt(offDays, 10) : 0,
+      total_work_days: workDays ? parseInt(workDays, 10) : 0,
+      start_weekday,
+      total_days,
+      nurses,
     };
 
     try {
       console.log(scheduleData);
       const response = await axios.post(
-        'http://your-server-endpoint.com/schedules',
+        // 'http://127.0.0.1:8000/nurses/generate_schedule/',
+        'http://54.209.241.210:8000/nurses/generate_schedule/',
         scheduleData
       );
       console.log('Data submitted successfully:', response.data);
@@ -38,7 +64,8 @@ const Schedule = () => {
         <div>
           <label>오프날 : </label>
           <input
-            type='text'
+            type='number'
+            min='0'
             value={offDays}
             onChange={(e) => setOffDays(e.target.value)}
             placeholder='숫자만 입력해주세요.'
@@ -48,7 +75,8 @@ const Schedule = () => {
         <div>
           <label>근무날 : </label>
           <input
-            type='text'
+            type='number'
+            min='0'
             value={workDays}
             onChange={(e) => setWorkDays(e.target.value)}
             placeholder='숫자만 입력해주세요.'
