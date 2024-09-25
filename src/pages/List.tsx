@@ -11,19 +11,22 @@ const List = () => {
 
   const handleEdit = (index: number) => {
     const scheduleToEdit = schedules[index];
+
     const newName = prompt('이름을 입력하세요', scheduleToEdit.name);
+
     const confirmSupervisor = confirm(
       '사수 여부를 수정하시겠습니까? \n확인: 사수, 취소: 부사수'
     );
-    const newIsSupervisor = confirmSupervisor
-      ? true
-      : scheduleToEdit.isSupervisor;
+    const newIsSupervisor = confirmSupervisor;
 
     const daysInput = prompt(
       `연차 사용 날짜를 입력해주세요 \n몇 일 사용하실 건가요? (쉼표로 구분)`,
       scheduleToEdit.selectedDates
-        .map((date) => date.getDate()) // 날짜만 추출
-        .join(', ') // 쉼표로 구분
+        .map((date) => {
+          const day = new Date(date).getDate();
+          return day;
+        })
+        .join(', ')
     );
 
     const daysArray = daysInput
@@ -41,16 +44,15 @@ const List = () => {
 
     const newDates = daysArray
       ?.map((days) => {
-        // 유효한 날짜인지 확인
         if (days > 0 && days <= daysInMonth) {
           const newDate = new Date();
           newDate.setMonth(newDate.getMonth() + 1);
           newDate.setDate(days);
           return newDate;
         }
-        return null; // 유효하지 않은 날짜는 null로 처리
+        return null;
       })
-      .filter((date) => date !== null); // null 필터링
+      .filter((date) => date !== null);
 
     const sortedDates = (newDates || []).sort(
       (a, b) => a.getDate() - b.getDate()
@@ -72,7 +74,10 @@ const List = () => {
                 ...schedule,
                 name: newName,
                 isSupervisor: newIsSupervisor,
-                selectedDates: sortedDates,
+                selectedDates:
+                  sortedDates?.map(
+                    (date) => date.toISOString().split('T')[0]
+                  ) || [],
                 formattedDates: formattedDates,
               }
             : schedule
@@ -84,10 +89,10 @@ const List = () => {
   return (
     <div className='flex flex-col items-center justify-center gap-5 py-4 w-svw'>
       <h2 className='text-[30px] font-semibold'>근무 인원 목록</h2>
-      <ul className='flex w-[70%] list-disc flex-col gap-3'>
+      <ul className='flex w-[80%] list-disc flex-col gap-3'>
         {schedules.map((schedule, index) => (
           <li key={index} className='flex items-start justify-between'>
-            <span className='w-[100px]'>
+            <span className='w-[110px]'>
               {`${schedule.name} (${schedule.isSupervisor ? '사수' : '부사수'})`}
             </span>
             {schedule.selectedDates.length > 0 && (
