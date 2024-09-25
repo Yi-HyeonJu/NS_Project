@@ -3,15 +3,11 @@ import { formatDate } from '../utils/dateUtils';
 import { useState } from 'react';
 
 interface ScheduleFormProps {
-  selectedDates: Date[];
-  setSelectedDates: React.Dispatch<React.SetStateAction<Date[]>>;
   addSchedule: (schedule: any) => void;
   setMonth: (monthString: string) => void;
 }
 
 const ScheduleForm: React.FC<ScheduleFormProps> = ({
-  selectedDates,
-  setSelectedDates,
   addSchedule,
   setMonth,
 }) => {
@@ -22,11 +18,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
   const [isSelectionComplete, setIsSelectionComplete] = useState(false);
 
   const handleDateChange = (date: Date) => {
-    const localDate = new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate()
-    );
+    const localDate = new Date(date);
+    localDate.setHours(0, 0, 0, 0);
+
     setTempSelectedDates((prevDates) => {
       const dateExists = prevDates.find(
         (d) => d.getTime() === localDate.getTime()
@@ -44,41 +38,42 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
   const handleRestClick = () => {
     setIsCalendarOpen(true);
     setIsSelectionComplete(false);
-    setTempSelectedDates(selectedDates);
+    setTempSelectedDates([...tempSelectedDates]);
   };
 
   const handleDoneClick = () => {
     setIsCalendarOpen(false);
     setIsSelectionComplete(true);
-    setSelectedDates(tempSelectedDates);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const formattedDates = selectedDates.map((date) => formatDate(date));
 
-    if (selectedDates.length > 0) {
-      const year = selectedDates[0].getFullYear();
-      const month = selectedDates[0].getMonth() + 1;
-      const monthString = `${year}년 ${month}월`;
+    const formattedDates =
+      tempSelectedDates.length > 0
+        ? tempSelectedDates.map((date) => formatDate(date))
+        : [];
 
-      const localSelectedDates = selectedDates.map(
-        (date) => new Date(date.getTime() + date.getTimezoneOffset() * 60000)
-      );
+    const today = new Date();
+    const nextMonthDate = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      1
+    );
+    const year = nextMonthDate.getFullYear();
+    const month = nextMonthDate.getMonth() + 1;
+    const monthString = `${year}년 ${month}월`;
 
-      addSchedule({
-        name,
-        isSupervisor,
-        selectedDates: localSelectedDates,
-        formattedDates,
-      });
+    addSchedule({
+      name,
+      isSupervisor,
+      formattedDates,
+    });
 
-      setMonth(monthString);
-    }
+    setMonth(monthString);
 
     setName('');
     setIsSupervisor(false);
-    setSelectedDates([]);
     setTempSelectedDates([]);
     setIsSelectionComplete(false);
   };
@@ -118,7 +113,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           onClick={handleRestClick}
           className='w-[70%] rounded-md border border-main px-2 py-1 text-left text-main'
         >
-          {selectedDates.length > 0 ? '날짜 수정하기' : '날짜를 선택해주세요'}
+          {tempSelectedDates.length > 0
+            ? '날짜 수정하기'
+            : '날짜를 선택해주세요'}
         </button>
       </div>
       {isCalendarOpen && (
@@ -136,11 +133,11 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({
           </button>
         </div>
       )}
-      {isSelectionComplete && selectedDates.length > 0 && (
+      {isSelectionComplete && tempSelectedDates.length > 0 && (
         <div className='flex w-[100%]'>
           <h3 className='w-[30%]'>선택한 날짜 :</h3>
           <div className='w-[70%]'>
-            {selectedDates.map((date, index) => (
+            {tempSelectedDates.map((date, index) => (
               <div key={index} className='text-sm'>
                 {formatDate(date)}
               </div>
