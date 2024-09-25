@@ -1,3 +1,4 @@
+import WorkCalendar from '../components/WorkCalendar';
 import axios from 'axios';
 import { useState } from 'react';
 import useStore from '../store/useStore';
@@ -6,6 +7,7 @@ const Schedule = () => {
   const { month, schedules } = useStore();
   const [offDays, setOffDays] = useState<string | undefined>('');
   const [workDays, setWorkDays] = useState<string | undefined>('');
+  const [scheduleData, setScheduleData] = useState([]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,11 +47,12 @@ const Schedule = () => {
     try {
       console.log(scheduleData);
       const response = await axios.post(
-        // 'http://127.0.0.1:8000/nurses/generate_schedule/',
-        'http://54.209.241.210:8000/nurses/generate_schedule/',
+        'http://127.0.0.1:8000/nurses/generate_schedule/',
+        // 'http://54.209.241.210:8000/nurses/generate_schedule/',
         scheduleData
       );
       console.log('Data submitted successfully:', response.data);
+      setScheduleData(response.data);
     } catch (error) {
       console.error('Error submitting data:', error);
     }
@@ -90,6 +93,7 @@ const Schedule = () => {
           근무표 만들기
         </button>
       </form>
+      {scheduleData.length > 0 && <WorkCalendar scheduleData={scheduleData} />}
     </div>
   );
 };
