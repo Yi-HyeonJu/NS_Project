@@ -5,7 +5,7 @@ import { create } from 'zustand';
 interface Schedule {
   name: string;
   isSupervisor: boolean;
-  selectedDates: Date[];
+  selectedDates: string[];
   formattedDates: string[];
 }
 
@@ -37,10 +37,28 @@ const useStore = create<Store>()(
     (set) => ({
       schedules: [],
       month: '',
-      addSchedule: (schedule) =>
+      addSchedule: (schedule) => {
+        const selectedDates = schedule.formattedDates
+          .map((date) => {
+            const parts = date.match(/(\d+)월\s(\d+)일/);
+            if (parts) {
+              const month = parseInt(parts[1], 10) - 1;
+              const day = parseInt(parts[2], 10);
+
+              const dateObj = new Date(new Date().getFullYear(), month, day);
+              dateObj.setDate(dateObj.getDate() + 1);
+
+              const formattedDate = dateObj.toISOString().split('T')[0];
+              return formattedDate;
+            }
+            return null;
+          })
+          .filter((date) => date !== null) as string[];
+
         set((state) => ({
-          schedules: [...state.schedules, schedule],
-        })),
+          schedules: [...state.schedules, { ...schedule, selectedDates }],
+        }));
+      },
       setMonth: (month) => set({ month }),
     }),
     {
