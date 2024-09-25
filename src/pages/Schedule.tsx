@@ -7,7 +7,7 @@ const Schedule = () => {
   const { month, schedules } = useStore();
   const [offDays, setOffDays] = useState<string | undefined>('');
   const [workDays, setWorkDays] = useState<string | undefined>('');
-  const [scheduleData, setScheduleData] = useState([]);
+  const [scheduleData, setScheduleData] = useState<[] | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -63,37 +63,41 @@ const Schedule = () => {
       <h2 className='text-[30px] font-semibold'>
         {month ? `${month} 근무표` : '근무표'}
       </h2>
-      <form onSubmit={handleSubmit} className='flex flex-col gap-3'>
-        <div>
-          <label>오프날 : </label>
-          <input
-            type='number'
-            min='0'
-            value={offDays}
-            onChange={(e) => setOffDays(e.target.value)}
-            placeholder='숫자만 입력해주세요.'
-            className='p-1 border rounded border-main'
-          />
-        </div>
-        <div>
-          <label>근무날 : </label>
-          <input
-            type='number'
-            min='0'
-            value={workDays}
-            onChange={(e) => setWorkDays(e.target.value)}
-            placeholder='숫자만 입력해주세요.'
-            className='p-1 border rounded border-main'
-          />
-        </div>
-        <button
-          type='submit'
-          className='px-2 py-1 rounded-lg bg-border hover:bg-gray-400'
-        >
-          근무표 만들기
-        </button>
-      </form>
-      {scheduleData.length > 0 && <WorkCalendar scheduleData={scheduleData} />}
+      {/* scheduleData가 null인 경우에만 폼을 보여줌 */}
+      {scheduleData === null ? (
+        <form onSubmit={handleSubmit} className='flex flex-col gap-3'>
+          <div>
+            <label>오프날 : </label>
+            <input
+              type='number'
+              min='0'
+              value={offDays}
+              onChange={(e) => setOffDays(e.target.value)}
+              placeholder='숫자만 입력해주세요.'
+              className='p-1 border rounded border-main'
+            />
+          </div>
+          <div>
+            <label>근무날 : </label>
+            <input
+              type='number'
+              min='0'
+              value={workDays}
+              onChange={(e) => setWorkDays(e.target.value)}
+              placeholder='숫자만 입력해주세요.'
+              className='p-1 border rounded border-main'
+            />
+          </div>
+          <button
+            type='submit'
+            className='px-2 py-1 rounded-lg bg-border hover:bg-gray-400'
+          >
+            근무표 만들기
+          </button>
+        </form>
+      ) : (
+        <WorkCalendar scheduleData={scheduleData} />
+      )}
     </div>
   );
 };
