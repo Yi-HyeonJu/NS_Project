@@ -51,13 +51,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   };
 
   return (
-    <div className='mx-auto w-full max-w-md'>
-      <div className='mb-4 text-center font-bold'>
+    <div className='w-full max-w-md mx-auto'>
+      <div className='mb-4 font-bold text-center'>
         {displayMonth.getFullYear()}년 {displayMonth.getMonth() + 1}월
       </div>
-      <div className='mb-4 grid grid-cols-7 gap-1'>
+      <div className='grid grid-cols-7 gap-1 mb-4'>
         {['일', '월', '화', '수', '목', '금', '토'].map((day) => (
-          <div key={day} className='p-2 text-center font-bold'>
+          <div key={day} className='p-2 font-bold text-center'>
             {day}
           </div>
         ))}
