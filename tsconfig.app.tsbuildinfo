@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/customcalendar.tsx","./src/components/scheduleform.tsx","./src/components/workcalendar.tsx","./src/pages/home.tsx","./src/pages/list.tsx","./src/pages/schedule.tsx","./src/store/usestore.ts","./src/utils/dateutils.ts"],"version":"5.6.2"}
