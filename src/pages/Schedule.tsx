@@ -1,5 +1,6 @@
+import axios, { AxiosError } from 'axios';
+
 import WorkCalendar from '../components/WorkCalendar';
-import axios from 'axios';
 import { useState } from 'react';
 import useStore from '../store/useStore';
 
@@ -54,7 +55,11 @@ const Schedule = () => {
       console.log('Data submitted successfully:', response.data);
       setScheduleData(response.data);
     } catch (error) {
-      console.error('Error submitting data:', error);
+      if (error instanceof AxiosError && error.response?.status === 500) {
+        alert('인원수가 부족합니다. 인원을 확인해주세요.');
+      } else {
+        console.error('Error submitting data:', error);
+      }
     }
   };
 
