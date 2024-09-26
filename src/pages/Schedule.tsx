@@ -48,7 +48,7 @@ const Schedule = () => {
     try {
       console.log(scheduleData);
 
-      await axios.delete('http://127.0.0.1:8000/nurses/delete/');
+      await axios.delete('http://api.schdule.site/nurses/nurses/delete/');
 
       const response = await axios.post(
         // 'http://127.0.0.1:8000/nurses/generate_schedule/',
@@ -82,7 +82,7 @@ const Schedule = () => {
               value={offDays}
               onChange={(e) => setOffDays(e.target.value)}
               placeholder='숫자만 입력해주세요.'
-              className='p-1 border rounded border-main'
+              className='rounded border border-main p-1'
             />
           </div>
           <div>
@@ -93,12 +93,12 @@ const Schedule = () => {
               value={workDays}
               onChange={(e) => setWorkDays(e.target.value)}
               placeholder='숫자만 입력해주세요.'
-              className='p-1 border rounded border-main'
+              className='rounded border border-main p-1'
             />
           </div>
           <button
             type='submit'
-            className='px-2 py-1 rounded-lg bg-border hover:bg-gray-400'
+            className='rounded-lg bg-border px-2 py-1 hover:bg-gray-400'
           >
             근무표 만들기
           </button>
