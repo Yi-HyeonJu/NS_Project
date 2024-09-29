@@ -14,6 +14,8 @@ const List = () => {
 
     const newName = prompt('이름을 입력하세요', scheduleToEdit.name);
 
+    if (!newName) return;
+
     const confirmSupervisor = confirm(
       '사수 여부를 수정하시겠습니까? \n확인: 사수, 취소: 부사수'
     );
