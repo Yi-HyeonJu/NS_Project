@@ -48,11 +48,11 @@ const Schedule = () => {
     try {
       console.log(scheduleData);
 
-      await axios.delete('http://api.schdule.site/nurses/nurses/delete/');
+      await axios.delete('https://api.schdule.site/nurses/nurses/delete/');
 
       const response = await axios.post(
-        // 'http://127.0.0.1:8000/nurses/generate_schedule/',
-        'http://api.schdule.site/nurses/generate_schedule/',
+        // 'https://127.0.0.1:8000/nurses/generate_schedule/',
+        'https://api.schdule.site/nurses/generate_schedule/',
         scheduleData
       );
       console.log('Data submitted successfully:', response.data);
