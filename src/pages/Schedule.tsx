@@ -6,28 +6,78 @@ import useStore from '../store/useStore';
 const Schedule = () => {
   const { month, schedules } = useStore();
   const [offDays, setOffDays] = useState<string | undefined>('');
-  const [workDays, setWorkDays] = useState<string | undefined>('');
   const [scheduleData, setScheduleData] = useState<[] | null>(null);
+  const [isSufficient, setIsSufficient] = useState<boolean>(false);
+
+  // 다음 월의 총 일수를 계산하는 함수
+  const getTotalDays = (year: number, month: number) => {
+    const lastDay = new Date(year, month + 1, 0);
+    return lastDay.getDate();
+  };
+
+  // 최소 간호사 수를 계산하는 함수
+  const calculateMinNurses = (
+    totalDays: number,
+    totalOffDays: number
+  ): number => {
+    const totalWorkDays = totalDays - totalOffDays;
+    const weekdayNursesNeeded = 8; // 평일에 필요한 간호사 수
+    const weekendNursesNeeded = 6; // 주말에 필요한 간호사 수
+
+    const totalNurseShiftsNeeded =
+      totalWorkDays * weekdayNursesNeeded + totalOffDays * weekendNursesNeeded;
+    const maxWorkDaysPerNurse = 5 * Math.floor(totalDays / 7);
+
+    return Math.max(Math.ceil(totalNurseShiftsNeeded / maxWorkDaysPerNurse), 1);
+  };
+
+  // 오프날과 근무날 수 계산
+  const calculateOffAndWorkDays = () => {
+    const totalOffDays = offDays ? parseInt(offDays, 10) : 0;
+    const today = new Date();
+    const totalDays = getTotalDays(today.getFullYear(), today.getMonth() + 1);
+    const totalWorkDays = totalDays - totalOffDays;
+    return { totalOffDays, totalWorkDays, totalDays };
+  };
+
+  const handleCheckMinimumStaff = () => {
+    const { totalOffDays, totalDays } = calculateOffAndWorkDays();
+    const totalNurses = schedules.length; // 전체 간호사 수
+    const minNursesNeeded = calculateMinNurses(totalDays, totalOffDays);
+
+    if (totalNurses - totalOffDays >= minNursesNeeded) {
+      alert('인원이 충분합니다. 근무표를 만들어 주세요.');
+      setIsSufficient(true); // 충분할 경우 상태 변경
+    } else {
+      alert(`인원이 부족합니다. 최소인원 : ${minNursesNeeded}`);
+      setIsSufficient(false); // 부족할 경우 상태 변경
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!isSufficient || null) {
+      alert('먼저 최소인원을 확인해 주세요.');
+      return;
+    }
+
+    const { totalOffDays, totalWorkDays, totalDays } =
+      calculateOffAndWorkDays();
+
+    // 오프날 검증
+    if (totalOffDays > totalDays) {
+      alert('오프날 수가 총 일수를 초과할 수 없습니다.');
+      return;
+    }
 
     const today = new Date();
-    const nextMonthFirstDay = new Date(
+    const start_weekday = new Date(
       today.getFullYear(),
       today.getMonth() + 1,
       1
-    );
-    const nextMonthLastDay = new Date(
-      today.getFullYear(),
-      today.getMonth() + 2,
-      0
-    );
-
-    const start_weekday = nextMonthFirstDay.toLocaleDateString('en-US', {
+    ).toLocaleDateString('en-US', {
       weekday: 'long',
     });
-    const total_days = nextMonthLastDay.getDate();
 
     const nurses = schedules.map((schedule, index) => ({
       id: index + 1,
@@ -37,10 +87,10 @@ const Schedule = () => {
     }));
 
     const scheduleData = {
-      total_off_days: offDays ? parseInt(offDays, 10) : 0,
-      total_work_days: workDays ? parseInt(workDays, 10) : 0,
+      total_off_days: totalOffDays,
+      total_work_days: totalWorkDays,
       start_weekday,
-      total_days,
+      total_days: totalDays,
       nurses,
     };
 
@@ -80,20 +130,18 @@ const Schedule = () => {
               className='p-1 border rounded border-main'
             />
           </div>
-          <div>
-            <label>근무날 : </label>
-            <input
-              type='number'
-              min='0'
-              value={workDays}
-              onChange={(e) => setWorkDays(e.target.value)}
-              placeholder='숫자만 입력해주세요.'
-              className='p-1 border rounded border-main'
-            />
-          </div>
+
+          <button
+            type='button'
+            onClick={handleCheckMinimumStaff}
+            className='px-2 py-1 rounded-lg bg-border hover:bg-gray-400'
+          >
+            최소 근무인원 확인
+          </button>
+
           <button
             type='submit'
-            className='px-2 py-1 rounded-lg bg-border hover:bg-gray-400'
+            className='px-2 py-1 mt-5 rounded-lg bg-border hover:bg-gray-400'
           >
             근무표 만들기
           </button>
