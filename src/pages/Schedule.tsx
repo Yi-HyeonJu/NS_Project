@@ -1,6 +1,5 @@
-import axios, { AxiosError } from 'axios';
-
 import WorkCalendar from '../components/WorkCalendar';
+import axios from 'axios';
 import { useState } from 'react';
 import useStore from '../store/useStore';
 
@@ -58,11 +57,7 @@ const Schedule = () => {
       console.log('Data submitted successfully:', response.data);
       setScheduleData(response.data);
     } catch (error) {
-      if (error instanceof AxiosError && error.response?.status === 500) {
-        alert('인원수가 부족합니다. 인원을 확인해주세요.');
-      } else {
-        console.error('Error submitting data:', error);
-      }
+      console.error('Error submitting data:', error);
     }
   };
 
@@ -82,7 +77,7 @@ const Schedule = () => {
               value={offDays}
               onChange={(e) => setOffDays(e.target.value)}
               placeholder='숫자만 입력해주세요.'
-              className='rounded border border-main p-1'
+              className='p-1 border rounded border-main'
             />
           </div>
           <div>
@@ -93,12 +88,12 @@ const Schedule = () => {
               value={workDays}
               onChange={(e) => setWorkDays(e.target.value)}
               placeholder='숫자만 입력해주세요.'
-              className='rounded border border-main p-1'
+              className='p-1 border rounded border-main'
             />
           </div>
           <button
             type='submit'
-            className='rounded-lg bg-border px-2 py-1 hover:bg-gray-400'
+            className='px-2 py-1 rounded-lg bg-border hover:bg-gray-400'
           >
             근무표 만들기
           </button>
