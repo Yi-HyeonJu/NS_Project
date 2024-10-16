@@ -3,16 +3,18 @@ import axios from 'axios';
 import { useState } from 'react';
 import useStore from '../store/useStore';
 
+const weekdayNursesNeeded = 8; // 평일에 필요한 간호사 수
+const weekendNursesNeeded = 6; // 주말에 필요한 간호사 수
+
 const Schedule = () => {
   const { month, schedules } = useStore();
-  const [offDays, setOffDays] = useState<string | undefined>('');
+  const [offDays, setOffDays] = useState<string>('');
   const [scheduleData, setScheduleData] = useState<[] | null>(null);
   const [isSufficient, setIsSufficient] = useState<boolean>(false);
 
   // 다음 월의 총 일수를 계산하는 함수
   const getTotalDays = (year: number, month: number) => {
-    const lastDay = new Date(year, month + 1, 0);
-    return lastDay.getDate();
+    return new Date(year, month + 1, 0).getDate();
   };
 
   // 최소 간호사 수를 계산하는 함수
@@ -21,8 +23,6 @@ const Schedule = () => {
     totalOffDays: number
   ): number => {
     const totalWorkDays = totalDays - totalOffDays;
-    const weekdayNursesNeeded = 8; // 평일에 필요한 간호사 수
-    const weekendNursesNeeded = 6; // 주말에 필요한 간호사 수
 
     const totalNurseShiftsNeeded =
       totalWorkDays * weekdayNursesNeeded + totalOffDays * weekendNursesNeeded;
@@ -33,11 +33,10 @@ const Schedule = () => {
 
   // 오프날과 근무날 수 계산
   const calculateOffAndWorkDays = () => {
-    const totalOffDays = offDays ? parseInt(offDays, 10) : 0;
+    const totalOffDays = Math.max(0, parseInt(offDays, 10));
     const today = new Date();
     const totalDays = getTotalDays(today.getFullYear(), today.getMonth() + 1);
-    const totalWorkDays = totalDays - totalOffDays;
-    return { totalOffDays, totalWorkDays, totalDays };
+    return { totalWorkDays: totalDays - totalOffDays, totalDays, totalOffDays };
   };
 
   const handleCheckMinimumStaff = () => {
@@ -56,15 +55,12 @@ const Schedule = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!isSufficient || null) {
+    if (!isSufficient) {
       alert('먼저 최소인원을 확인해 주세요.');
       return;
     }
 
-    const { totalOffDays, totalWorkDays, totalDays } =
-      calculateOffAndWorkDays();
-
-    // 오프날 검증
+    const { totalOffDays, totalDays } = calculateOffAndWorkDays();
     if (totalOffDays > totalDays) {
       alert('오프날 수가 총 일수를 초과할 수 없습니다.');
       return;
@@ -88,7 +84,7 @@ const Schedule = () => {
 
     const scheduleData = {
       total_off_days: totalOffDays,
-      total_work_days: totalWorkDays,
+      total_work_days: totalDays - totalOffDays,
       start_weekday,
       total_days: totalDays,
       nurses,
