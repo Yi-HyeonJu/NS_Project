@@ -23,17 +23,43 @@ const Schedule = () => {
   };
 
   const handleCheckMinimumStaff = async () => {
+    const { totalOffDays, totalDays } = calculateOffAndWorkDays();
+    const today = new Date();
+    const start_weekday = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      1
+    ).toLocaleDateString('en-US', {
+      weekday: 'long',
+    });
+
+    const nurses = schedules.map((schedule, index) => ({
+      id: index + 1,
+      name: schedule.name,
+      is_senior: schedule.isSupervisor,
+      vacation_days: schedule.selectedDates,
+    }));
+
+    const scheduleData = {
+      total_off_days: totalOffDays,
+      total_work_days: totalDays - totalOffDays,
+      start_weekday,
+      total_days: totalDays,
+      nurses,
+    };
+
     try {
       const response = await axios.post(
         // 'https://127.0.0.1:8000/nurses/generate_schedule/',
         'https://api.schdule.site/nurses/calculate_min_nurses/',
         scheduleData
       );
-      setIsSufficient(true);
-      if (schedules.length >= response.data) {
+
+      if (schedules.length >= response.data.min_nurses_needed) {
         alert('근무표를 만들어 주세요.');
+        setIsSufficient(true);
       } else {
-        alert(`최소 인원은 ${response.data}입니다.`);
+        alert(`최소 인원은 ${response.data.min_nurses_needed}입니다.`);
       }
     } catch (error) {
       console.error('Error submitting data:', error);
