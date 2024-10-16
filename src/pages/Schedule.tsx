@@ -46,10 +46,10 @@ const Schedule = () => {
     const minNursesNeeded = calculateMinNurses(totalDays, totalOffDays);
 
     if (totalNurses - totalOffDays >= minNursesNeeded) {
-      alert('인원이 충분합니다. 근무표를 만들어 주세요.');
+      alert('인원이 충분합니다. 오프날 입력 후 근무표를 만들어 주세요.');
       setIsSufficient(true); // 충분할 경우 상태 변경
     } else {
-      alert(`인원이 부족합니다. 최소인원 : ${minNursesNeeded}`);
+      alert(`인원이 부족합니다. 최소인원 : ${minNursesNeeded + totalOffDays}`);
       setIsSufficient(false); // 부족할 경우 상태 변경
     }
   };
@@ -119,7 +119,7 @@ const Schedule = () => {
       {/* scheduleData가 null인 경우에만 폼을 보여줌 */}
       {scheduleData === null ? (
         <form onSubmit={handleSubmit} className='flex flex-col gap-3'>
-          <div>
+          <div className='mt-5'>
             <label>오프날 : </label>
             <input
               type='number'
@@ -134,7 +134,7 @@ const Schedule = () => {
           <button
             type='button'
             onClick={handleCheckMinimumStaff}
-            className='px-2 py-1 rounded-lg bg-border hover:bg-gray-400'
+            className='px-2 py-1 bg-orange-200 rounded-lg hover:bg-orange-300'
           >
             최소 근무인원 확인
           </button>
