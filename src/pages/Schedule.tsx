@@ -45,7 +45,7 @@ const Schedule = () => {
     const minNursesNeeded = calculateMinNurses(totalDays, totalOffDays);
 
     if (totalNurses >= minNursesNeeded) {
-      alert('인원이 충분합니다. 오프날 입력 후 근무표를 만들어 주세요.');
+      alert('인원이 충분합니다. 근무표를 만들어 주세요.');
       setIsSufficient(true); // 충분할 경우 상태 변경
     } else {
       alert(`인원이 부족합니다. 최소인원 : ${minNursesNeeded}`);
