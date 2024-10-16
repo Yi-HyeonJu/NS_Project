@@ -22,8 +22,18 @@ const Schedule = () => {
     return { totalWorkDays: totalDays - totalOffDays, totalDays, totalOffDays };
   };
 
-  const handleCheckMinimumStaff = async () => {
-    const { totalOffDays, totalDays } = calculateOffAndWorkDays();
+  // nurses 데이터를 생성하는 함수
+  const generateNursesData = () => {
+    return schedules.map((schedule, index) => ({
+      id: index + 1,
+      name: schedule.name,
+      is_senior: schedule.isSupervisor,
+      vacation_days: schedule.selectedDates,
+    }));
+  };
+
+  // scheduleData 객체를 생성하는 함수
+  const createScheduleData = (totalOffDays: number, totalDays: number) => {
     const today = new Date();
     const start_weekday = new Date(
       today.getFullYear(),
@@ -33,24 +43,21 @@ const Schedule = () => {
       weekday: 'long',
     });
 
-    const nurses = schedules.map((schedule, index) => ({
-      id: index + 1,
-      name: schedule.name,
-      is_senior: schedule.isSupervisor,
-      vacation_days: schedule.selectedDates,
-    }));
-
-    const scheduleData = {
+    return {
       total_off_days: totalOffDays,
       total_work_days: totalDays - totalOffDays,
       start_weekday,
       total_days: totalDays,
-      nurses,
+      nurses: generateNursesData(),
     };
+  };
+
+  const handleCheckMinimumStaff = async () => {
+    const { totalOffDays, totalDays } = calculateOffAndWorkDays();
+    const scheduleData = createScheduleData(totalOffDays, totalDays);
 
     try {
       const response = await axios.post(
-        // 'https://127.0.0.1:8000/nurses/generate_schedule/',
         'https://api.schdule.site/nurses/calculate_min_nurses/',
         scheduleData
       );
@@ -79,29 +86,7 @@ const Schedule = () => {
       return;
     }
 
-    const today = new Date();
-    const start_weekday = new Date(
-      today.getFullYear(),
-      today.getMonth() + 1,
-      1
-    ).toLocaleDateString('en-US', {
-      weekday: 'long',
-    });
-
-    const nurses = schedules.map((schedule, index) => ({
-      id: index + 1,
-      name: schedule.name,
-      is_senior: schedule.isSupervisor,
-      vacation_days: schedule.selectedDates,
-    }));
-
-    const scheduleData = {
-      total_off_days: totalOffDays,
-      total_work_days: totalDays - totalOffDays,
-      start_weekday,
-      total_days: totalDays,
-      nurses,
-    };
+    const scheduleData = createScheduleData(totalOffDays, totalDays);
 
     try {
       console.log(scheduleData);
@@ -109,7 +94,6 @@ const Schedule = () => {
       await axios.delete('https://api.schdule.site/nurses/nurses/delete/');
 
       const response = await axios.post(
-        // 'https://127.0.0.1:8000/nurses/generate_schedule/',
         'https://api.schdule.site/nurses/generate_schedule/',
         scheduleData
       );
