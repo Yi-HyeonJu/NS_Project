@@ -3,9 +3,6 @@ import axios from 'axios';
 import { useState } from 'react';
 import useStore from '../store/useStore';
 
-const weekdayNursesNeeded = 8; // 평일에 필요한 간호사 수
-const weekendNursesNeeded = 6; // 주말에 필요한 간호사 수
-
 const Schedule = () => {
   const { month, schedules } = useStore();
   const [offDays, setOffDays] = useState<string>('');
@@ -17,20 +14,6 @@ const Schedule = () => {
     return new Date(year, month + 1, 0).getDate();
   };
 
-  // 최소 간호사 수를 계산하는 함수
-  const calculateMinNurses = (
-    totalDays: number,
-    totalOffDays: number
-  ): number => {
-    const totalWorkDays = totalDays - totalOffDays;
-
-    const totalNurseShiftsNeeded =
-      totalWorkDays * weekdayNursesNeeded + totalOffDays * weekendNursesNeeded;
-    const maxWorkDaysPerNurse = 5 * Math.floor(totalDays / 7);
-
-    return Math.max(Math.ceil(totalNurseShiftsNeeded / maxWorkDaysPerNurse), 1);
-  };
-
   // 오프날과 근무날 수 계산
   const calculateOffAndWorkDays = () => {
     const totalOffDays = Math.max(0, parseInt(offDays, 10));
@@ -39,17 +22,21 @@ const Schedule = () => {
     return { totalWorkDays: totalDays - totalOffDays, totalDays, totalOffDays };
   };
 
-  const handleCheckMinimumStaff = () => {
-    const { totalOffDays, totalDays } = calculateOffAndWorkDays();
-    const totalNurses = schedules.length; // 전체 간호사 수
-    const minNursesNeeded = calculateMinNurses(totalDays, totalOffDays);
-
-    if (totalNurses >= minNursesNeeded) {
-      alert('인원이 충분합니다. 근무표를 만들어 주세요.');
-      setIsSufficient(true); // 충분할 경우 상태 변경
-    } else {
-      alert(`인원이 부족합니다. 최소인원 : ${minNursesNeeded}`);
-      setIsSufficient(false); // 부족할 경우 상태 변경
+  const handleCheckMinimumStaff = async () => {
+    try {
+      const response = await axios.post(
+        // 'https://127.0.0.1:8000/nurses/generate_schedule/',
+        'https://api.schdule.site/nurses/calculate_min_nurses/',
+        scheduleData
+      );
+      setIsSufficient(true);
+      if (schedules.length >= response.data) {
+        alert('근무표를 만들어 주세요.');
+      } else {
+        alert(`최소 인원은 ${response.data}입니다.`);
+      }
+    } catch (error) {
+      console.error('Error submitting data:', error);
     }
   };
 
