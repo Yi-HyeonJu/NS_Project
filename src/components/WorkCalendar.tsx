@@ -9,7 +9,7 @@ interface Shift {
 }
 
 interface ScheduleDay {
-  date: string;
+  date: number;
   shifts: Shift[];
 }
 
@@ -18,14 +18,15 @@ interface WorkCalendarProps {
 }
 
 const WorkCalendar: React.FC<WorkCalendarProps> = ({ scheduleData }) => {
-  const getStartOfMonth = (date: string): Date => {
-    const [year, month] = date.split('-');
-    return new Date(parseInt(year), parseInt(month) - 1, 1);
+  const getStartOfNextMonth = (): Date => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth() + 1, 1); // 다음 달의 첫 날
   };
 
   const renderDays = () => {
-    const firstDayOfMonth = getStartOfMonth(scheduleData[0].date);
-    const startWeekday = firstDayOfMonth.getDay();
+    const firstDayOfNextMonth = getStartOfNextMonth();
+
+    const startWeekday = firstDayOfNextMonth.getDay();
 
     const emptyDays = Array.from({ length: startWeekday }, (_, index) => (
       <div key={`empty-${index}`} className='p-2'></div>
@@ -36,7 +37,7 @@ const WorkCalendar: React.FC<WorkCalendarProps> = ({ scheduleData }) => {
       ...scheduleData.map((day, index) => (
         <div key={index} className='relative p-2 border border-gray-100'>
           <h3 className='mb-2 font-semibold text-center border-b'>
-            {new Date(day.date).getDate()}일
+            {day.date}일
           </h3>
           <div className='flex flex-col items-start justify-center'>
             {day.shifts.length > 0 ? (
